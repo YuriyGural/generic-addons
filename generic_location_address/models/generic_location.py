@@ -127,3 +127,14 @@ class GenericLocation(models.Model):
                 record.city_use_parent = False
                 record.state_id_use_parent = False
                 record.country_id_use_parent = False
+
+    @api.onchange('country_id')
+    def _onchange_country_id(self):
+        if self.country_id and self.country_id != self.state_id.country_id and \
+                not self.state_id_use_parent:
+            self.state_id = False
+
+    @api.onchange('state_id')
+    def _onchange_state(self):
+        if self.state_id.country_id and not self.country_id_use_parent:
+            self.country_id = self.state_id.country_id
